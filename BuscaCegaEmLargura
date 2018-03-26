@@ -1,0 +1,147 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+import java.util.*;
+
+public class Solution {
+    
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int m;
+        String line[];
+        ArrayList<Node> grid = new ArrayList<Node>();
+        
+        
+        m = in.nextInt();
+        line = new String[m];  
+        for(int i = 0; i < m; i++) {
+            line[i] = in.next();    
+        }  
+        
+        for(int i = 0; i < m; i++){
+            char[] charArr = line[i].toCharArray();
+            for(int j = 0; j < m; j++){
+                boolean ma = false;
+                boolean pr = false;
+                if(charArr[j] == 'm')
+                    ma = true;
+                if(charArr[j] == 'p')
+                    pr = true;
+                grid.add(new Node(new Coord(i, j), new ArrayList<Node>(), pr, ma));
+            }
+        }
+        
+        BFS bfs = new BFS(grid);
+        
+        bfs.busca();
+    }
+    
+    public static acharVizinhos(ArrayList<Node> n){
+            
+    }
+    
+    public static class Node{
+        public Coord value;
+        public ArrayList<Node> neighbor;
+        public Node pred;
+        private boolean princess;
+        private boolean mario;
+        
+        public Node(Coord c, ArrayList<Node> ngb, boolean p, boolean m){
+            this.value = c;
+            this.neighbor = ngb;
+            this.princess = p;
+            this.mario = m;
+            this.pred = null;        
+        }
+        
+        public boolean itsPrincess(){
+            return this.princess;
+        }
+        
+        public boolean itsMario(){
+            return this.mario;
+        }
+        
+        //public String command(Node compare){}
+    }
+    
+    public static class Coord{
+        public int row;
+        public int col;
+        
+        public Coord(){}
+        
+        public Coord(int x, int y){
+            this.row = x;
+            this.col = y;
+        }
+        
+        public String toString(){
+            return "(" + Integer.toString(this.row) + ";" + Integer.toString(this.col) + ")";
+        }
+    }
+    
+    public static class BFS{
+        private ArrayList<Node> grid;
+        private Node end;
+        private Node init;
+        public List<Node> fila = new ArrayList<Node>();
+        
+        public BFS(ArrayList<Node> g){
+            this.grid = g;
+            this.marcarPontos();
+            this.fila.add(this.init);
+        }
+        
+        public void marcarPontos(){
+            for(Node n: this.grid){
+                if(n.itsMario())
+                    this.init = n;
+                if(n.itsPrincess())
+                    this.end = n;
+            }
+        }
+        
+        public void carregarLista(){
+            Node current = fila.get(0);
+            Node removido = fila.remove(0);
+            
+            System.out.println(removido.value);
+            
+            for(Node n: current.neighbor){
+                n.pred = current;
+                fila.add(n);
+            }
+            
+            this.busca();
+        }
+        
+        public void busca(){
+            if(this.fila.isEmpty()){
+                System.out.println("Não há caminho!");
+                return;
+            }
+            
+            if(!(this.init.itsPrincess())){
+                carregarLista();        
+            }
+            
+            System.out.println(mostraCaminho(this.end));
+        }
+        
+        public String mostraCaminho(Node n){
+            if(n.pred == null){
+                return "";
+            }
+            
+            StringBuilder caminho = new StringBuilder();
+            
+            caminho.append(this.mostraCaminho(n.pred));
+            
+            return n.value.toString() + " - ";
+        }
+    }
+}
